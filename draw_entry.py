@@ -18,6 +18,12 @@ d = ImageDraw.Draw(im)
 d.rounded_rectangle((72, 49, 956, 968), radius=22, fill="#aa987c")
 d.rounded_rectangle((64, 42, 948, 961), radius=20, fill="#f4e6c9")
 d.rounded_rectangle((54, 32, 936, 950), radius=18, fill="#fff8e8", outline="#dfd0b5", width=5)
+# A very soft honey-colored wash across the paper and blurred shadow below it.
+wash = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+wd = ImageDraw.Draw(wash)
+wd.polygon([(55, 32), (936, 32), (936, 950), (55, 950)], fill=(255, 214, 137, 17))
+wash = wash.filter(ImageFilter.GaussianBlur(30))
+im = Image.alpha_composite(im, wash)
 # Fine seeded grain on the paper.
 for _ in range(9500):
     x, y = random.randrange(58, 932), random.randrange(36, 946)
@@ -132,7 +138,7 @@ fur = (175, 102, 61); lightfur = (207, 135, 83); dark = "#593a2e"
 shape([(373, 615), (337, 628), (319, 688), (330, 774), (360, 805), (390, 759), (397, 673)], (132, 75, 48), dark, 7, texture=55)
 shape([(635, 614), (676, 623), (702, 682), (695, 771), (660, 801), (630, 750), (621, 674)], (132, 75, 48), dark, 7, texture=55)
 shape((354, 593, 659, 846), fur, dark, 8, ellipse=True, texture=110)
-shape([(380, 616), (411, 590), (439, 602), (465, 583), (496, 598), (526, 584), (558, 602), (597, 594), (638, 629), (651, 687), (633, 752), (593, 793), (438, 798), (390, 757), (369, 683)], lightfur, dark, 5, texture=65)
+shape((378, 590, 642, 808), lightfur, dark, 5, ellipse=True, texture=75)
 # Two paws rest on the sill; a separate lifted paw waves.
 shape((381, 811, 465, 862), lightfur, dark, 5, ellipse=True, texture=28)
 shape((548, 811, 633, 862), lightfur, dark, 5, ellipse=True, texture=28)
@@ -144,6 +150,8 @@ d.ellipse((490, 691, 510, 701), fill="#82736a")
 # Closed smiling eyes (^ ^) and smile.
 d.arc((417, 653, 469, 686), 200, 340, fill="#3d2c27", width=6)
 d.arc((560, 653, 612, 686), 200, 340, fill="#3d2c27", width=6)
+d.ellipse((405, 697, 439, 716), fill="#e98e83")
+d.ellipse((590, 697, 624, 716), fill="#e98e83")
 d.arc((453, 724, 576, 790), 8, 170, fill="#53382d", width=6)
 d.ellipse((498, 758, 550, 810), fill="#ed7180", outline="#a94e56", width=3)
 d.line((524, 785, 524, 800), fill="#b84f62", width=2)
@@ -151,15 +159,13 @@ d.line((524, 785, 524, 800), fill="#b84f62", width=2)
 for x, y in [(454, 725), (466, 735), (572, 732), (560, 740)]: d.ellipse((x-3, y-3, x+3, y+3), fill="#79543d")
 for pts in [[(376, 680), (357, 696), (381, 696)], [(641, 683), (660, 699), (638, 700)], [(399, 771), (383, 788), (411, 782)]]:
     d.line(pts, fill=dark, width=4)
-# Wagging tail with motion marks.
-d.arc((632, 706, 738, 833), 255, 75, fill=dark, width=18)
-d.arc((638, 709, 735, 827), 255, 75, fill=lightfur, width=10)
-d.arc((712, 709, 777, 766), 205, 300, fill="#8a5736", width=5)
-d.arc((722, 700, 790, 757), 205, 300, fill="#8a5736", width=4)
-# Raised waving paw with toe marks.
-d.line((624, 746, 687, 706), fill=dark, width=30)
-d.ellipse((666, 665, 723, 721), fill=lightfur, outline=dark, width=5)
-for x in (680, 697, 713): d.arc((x-5, 667, x+5, 686), 180, 355, fill="#f2c59a", width=3)
+# Raised forearm grows from the dog's right shoulder into a rounded waving paw.
+# A dark soft outline under the fur stroke keeps the limb visibly connected.
+d.line([(588, 800), (632, 776), (658, 735), (679, 707)], fill=dark, width=39, joint="curve")
+d.line([(588, 800), (632, 776), (658, 735), (679, 707)], fill="#c77f4e", width=29, joint="curve")
+d.ellipse((657, 676, 719, 728), fill="#c77f4e", outline=dark, width=5)
+d.ellipse((662, 681, 714, 723), fill="#d28b56")
+for x in (672, 689, 706): d.arc((x-5, 681, x+5, 701), 180, 355, fill="#f2c59a", width=3)
 
 # Gold star sticker and a few airy hearts on the paper.
 d = ImageDraw.Draw(im)
@@ -176,17 +182,64 @@ for x, y, scale in [(824, 293, 1), (178, 447, .8), (775, 394, .65)]:
     d.arc((x+15*scale, y, x+33*scale, y+19*scale), 185, 355, fill="#de7c78", width=3)
     d.line((x+1, y+9*scale, x+16*scale, y+25*scale, x+32*scale, y+9*scale), fill="#de7c78", width=3)
 
-# Pickles appears again in the lower-right: brown scruff, clear floppy ear and nose.
+# Real Pickles peeks over the bottom-right paper edge in a softer painted style.
+# A blurred warm shadow separates his head from the paper; layered ellipses give
+# his coat rounded, softly shaded volume without competing with the crayon scene.
+shadow = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+ImageDraw.Draw(shadow).ellipse((799, 895, 1055, 1110), fill=(65, 42, 30, 90))
+im = Image.alpha_composite(im, shadow.filter(ImageFilter.GaussianBlur(18)))
 d = ImageDraw.Draw(im)
-d.ellipse((851, 918, 1031, 1085), fill="#765038", outline="#4f392d", width=6)
-d.polygon([(860, 955), (880, 920), (919, 926), (932, 980), (910, 1023), (878, 1009)], fill="#985f3f", outline="#573b2e")
-d.ellipse((888, 923, 1009, 1034), fill="#ae704a", outline="#61412e", width=5)
-# Shaggy brow tufts and unmistakable dog nose.
-for x, y in [(906, 933), (932, 925), (956, 932), (983, 942)]:
-    d.line((x, y, x-7, y+15), fill="#754a35", width=5)
-d.ellipse((927, 966, 1008, 1025), fill="#272321", outline="#49352d", width=4)
-d.ellipse((941, 970, 960, 979), fill="#8b817a")
-d.arc((907, 1002, 987, 1050), 5, 165, fill="#4d342b", width=4)
+d.ellipse((800, 923, 1064, 1136), fill="#533a2c")
+d.ellipse((808, 918, 1044, 1116), fill="#704831")
+d.ellipse((821, 920, 1029, 1095), fill="#956144")
+d.ellipse((842, 927, 1016, 1077), fill="#b17a53")
+# One broad floppy ear, with a soft inner warm-brown edge.
+d.ellipse((811, 925, 885, 1060), fill="#593c30")
+d.ellipse((820, 935, 873, 1047), fill="#86543a")
+# Two bright eyes look up toward the viewer.
+d.ellipse((875, 941, 916, 985), fill="#362820")
+d.ellipse((959, 943, 1000, 987), fill="#362820")
+d.ellipse((881, 945, 908, 975), fill="#111820")
+d.ellipse((965, 947, 992, 977), fill="#111820")
+d.ellipse((884, 947, 895, 958), fill="#fff8e7")
+d.ellipse((968, 949, 979, 960), fill="#fff8e7")
+d.ellipse((899, 963, 905, 969), fill="#d9aa71")
+d.ellipse((983, 965, 989, 971), fill="#d9aa71")
+# Glossy black nose and muzzle highlight.
+d.ellipse((914, 968, 986, 1019), fill="#17191b", outline="#382c26", width=4)
+d.ellipse((926, 973, 946, 982), fill="#f4e4cf")
+d.ellipse((951, 983, 957, 988), fill="#8a8988")
+d.arc((897, 1000, 979, 1049), 12, 160, fill="#56392b", width=4)
+# Soft painted highlight on the forehead and coat.
+glow = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+gd = ImageDraw.Draw(glow)
+gd.ellipse((864, 902, 981, 945), fill=(255, 219, 177, 55))
+glow = glow.filter(ImageFilter.GaussianBlur(10))
+im = Image.alpha_composite(im, glow)
+d = ImageDraw.Draw(im)
+d.ellipse((864, 911, 876, 923), fill="#fff0da")
+# A foreleg reaches around the left side of the face to grip the page's bottom edge.
+d.line((835, 1026, 800, 964), fill="#593c30", width=25)
+d.line((835, 1026, 800, 964), fill="#a66f4d", width=17)
+d.ellipse((758, 930, 819, 965), fill="#b67d56", outline="#684632", width=3)
+d.arc((766, 933, 783, 953), 180, 350, fill="#765039", width=2)
+d.arc((785, 932, 802, 953), 180, 350, fill="#765039", width=2)
+d.arc((803, 933, 816, 953), 180, 350, fill="#765039", width=2)
+
+# Handwritten label and curved arrow stay on the clear paper strip below the sill.
+d = ImageDraw.Draw(im)
+label_font = ImageFont.truetype(font_path, 34)
+label = "this is him!"
+label_box = d.textbbox((0, 0), label, font=label_font)
+label_x, label_y = 600, 896
+if label_x + label_box[2] > 800 or label_y + label_box[3] > 944:
+    raise ValueError("Cameo label does not fit the clear paper strip")
+d.text((label_x, label_y), label, font=label_font, fill="#454b50")
+arrow_start = label_x + label_box[2] + 8
+arrow_points = [(arrow_start, 916), (arrow_start+17, 919), (arrow_start+38, 928), (arrow_start+59, 940), (arrow_start+78, 948)]
+d.line(arrow_points, fill="#454b50", width=3, joint="curve")
+d.line((arrow_points[-1], (arrow_points[-1][0]-10, arrow_points[-1][1]-2)), fill="#454b50", width=3)
+d.line((arrow_points[-1], (arrow_points[-1][0]-2, arrow_points[-1][1]-10)), fill="#454b50", width=3)
 
 # Save an RGB baseline JPEG with deterministic output.
 im = im.convert("RGB")
